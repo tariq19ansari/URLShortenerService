@@ -1,3 +1,4 @@
+com/springboot/demo/Controller/UrlShorteningController.class
 com/springboot/demo/UrlShortenerServicesApplication.class
 com/springboot/demo/model/Url.class
 com/springboot/demo/model/UrlResponseDto.class
