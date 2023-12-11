@@ -62,12 +62,16 @@ public class UrlShorteningController {
         if(urlToRet == null)
         {
             UrlErrorResponseDto urlErrorResponseDto = new UrlErrorResponseDto();
-            urlErrorResponseDto.setError("Url does not exist or it might have expired!");
+            urlErrorResponseDto.setError("Url does not exist!");
             urlErrorResponseDto.setStatus("400");
             return new ResponseEntity<UrlErrorResponseDto>(urlErrorResponseDto,HttpStatus.OK);
         }
+        String urlString = urlToRet.getOriginalUrl();
 
-        response.sendRedirect(urlToRet.getOriginalUrl());
+        if (!urlString.matches("https(.*)")){
+            urlString = "https://" + urlString;
+        }
+        response.sendRedirect(urlString);
         return null;
     }
 }

@@ -9,5 +9,34 @@
 <button onclick="generateShortenedURL()">Generate</button>
 <p id="shortenedURLDisplay"></p>
 <!-- <p>Shortened URL: <a href="#" id="shortenedURL" target="_blank"></a></p>  -->
+
+<script>
+    function generateShortenedURL() {
+        var originalURL = document.getElementById("urlInput").value;
+
+        // Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Define the request parameters (method, URL, asynchronous flag)
+        xhr.open("POST", "/generate", true);
+
+        // Set the request header
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Define what happens on successful response from the server
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                document.getElementById("shortenedURLDisplay").innerText = xhr.responseText;
+            } else {
+                console.error('Request failed. Status: ' + xhr.status);
+            }
+        };
+        var json = {"url": originalURL};
+
+        // Send the request with the URL data
+        xhr.send(JSON.stringify(json));
+    }
+</script>
+
 </body>
 </html>
