@@ -4,20 +4,17 @@ package com.springboot.demo.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-
-
 
 
 @Entity
 public class Url {
-@Id
-@GeneratedValue
+    @Id
+    @GeneratedValue
     private long id;
     public String originalUrl;
     private String shortLink;
 
-    public Url(long id, String originalUrl, String shortLink) {
+    public Url(String originalUrl, String shortLink) {
         this.id = id;
         this.originalUrl = originalUrl;
         this.shortLink = shortLink;

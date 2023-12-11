@@ -10,31 +10,42 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Component
-public class UrlServiceImpl implements UrlService{
-
+public class UrlServiceImpl implements UrlService {
+    private final Map<String, String> urlMap = new HashMap<>();
     @Autowired
     private UrlRepository urlRepository;
 
     @Override
     public Url generateShortLink(UrlDto urlDto) {
-        System.out.println(333333);
-        if(StringUtils.isNotEmpty(urlDto.getUrl()))
-        {
-            String encodedUrl = encodeUrl(urlDto.getUrl());
-            Url urlToPersist = new Url();
+        if (StringUtils.isNotEmpty(urlDto.getUrl())) {
+            String originalUrl = urlDto.getUrl();
 
-            urlToPersist.setOriginalUrl(urlDto.getUrl());
-            urlToPersist.setShortLink(encodedUrl);
+            // Check if the URL is already shortened
+            if (urlMap.containsKey(originalUrl)) {
+                String existingShortenedUrl = urlMap.get(originalUrl);
+                // Retrieve the existing shortened URL and return
+                Url url = new Url(originalUrl, existingShortenedUrl);
+                return url;
+            } else {
+                String encodedUrl = encodeUrl(urlDto.getUrl());
+                Url urlToPersist = new Url();
 
-            Url urlToRet = persistShortLink(urlToPersist);
+                urlToPersist.setOriginalUrl(originalUrl);
+                urlToPersist.setShortLink(encodedUrl);
 
-            if(urlToRet != null)
-                return urlToRet;
+                Url urlToRet = persistShortLink(urlToPersist);
 
-            return null;
+                if (urlToRet != null) {
+                    // Store the mapping in the map
+                    urlMap.put(originalUrl, encodedUrl);
+                    return urlToRet;
+                }
+            }
         }
         return null;
     }
@@ -45,8 +56,9 @@ public class UrlServiceImpl implements UrlService{
         encodedUrl = Hashing.murmur3_32()
                 .hashString(url.concat(time.toString()), StandardCharsets.UTF_8)
                 .toString();
-        return  encodedUrl;
+        return encodedUrl;
     }
+
     @Override
     public Url persistShortLink(Url url) {
         Url urlToRet = urlRepository.save(url);

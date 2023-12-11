@@ -2,8 +2,8 @@ package com.springboot.demo.model;
 
 public class UrlErrorResponseDto {
 
-     private String status;
-     private String error;
+    private String status;
+    private String error;
 
     public UrlErrorResponseDto(String status, String error) {
         this.status = status;

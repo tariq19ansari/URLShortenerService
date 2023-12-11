@@ -25,58 +25,54 @@ public class UrlShorteningController {
     private UrlService urlService;
 
     @RequestMapping("/")
-    public String index(){
+    public String index() {
         return "index.html";
     }
 
     @PostMapping("/generate")
-    public ResponseEntity<?> generateShortLink(@RequestBody UrlDto urlDto)
-    {
+    public ResponseEntity<?> generateShortLink(@RequestBody UrlDto urlDto) {
         Url urlToRet = urlService.generateShortLink(urlDto);
 
-        if(urlToRet != null)
-    {
-        UrlResponseDto urlResponseDto = new UrlResponseDto();
-        urlResponseDto.setOriginalUrl(urlToRet.getOriginalUrl());
-        urlResponseDto.setShortLink(urlToRet.getShortLink());
-        return new ResponseEntity<String>(urlResponseDto.getShortLink(), HttpStatus.OK);
-    }
+        if (urlToRet != null) {
+            UrlResponseDto urlResponseDto = new UrlResponseDto();
+            urlResponseDto.setOriginalUrl(urlToRet.getOriginalUrl());
+            urlResponseDto.setShortLink(urlToRet.getShortLink());
+            return new ResponseEntity<String>(urlResponseDto.getShortLink(), HttpStatus.OK);
+        }
         UrlErrorResponseDto urlErrorResponseDto = new UrlErrorResponseDto();
         urlErrorResponseDto.setStatus("404");
         urlErrorResponseDto.setError(" Error processing your request. Please try again.");
-        return new ResponseEntity<UrlErrorResponseDto>(urlErrorResponseDto,HttpStatus.OK);
+        return new ResponseEntity<UrlErrorResponseDto>(urlErrorResponseDto, HttpStatus.OK);
 
-}
-@GetMapping("/{shortLink}")
+    }
+
+    @GetMapping("/{shortLink}")
     public ResponseEntity<?> redirectToOriginalUrl(@PathVariable String shortLink, HttpServletResponse response) throws IOException {
 
-        if(StringUtils.isEmpty(shortLink))
-        {
+        if (StringUtils.isEmpty(shortLink)) {
             UrlErrorResponseDto urlErrorResponseDto = new UrlErrorResponseDto();
             urlErrorResponseDto.setError("This is a Invalid Url");
             urlErrorResponseDto.setStatus("400");
-            return new ResponseEntity<UrlErrorResponseDto>(urlErrorResponseDto,HttpStatus.OK);
+            return new ResponseEntity<UrlErrorResponseDto>(urlErrorResponseDto, HttpStatus.OK);
         }
         Url urlToRet = urlService.getEncodedUrl(shortLink);
-    System.out.print(urlToRet);
-    System.out.print(urlToRet.originalUrl);
-    System.out.print(urlToRet.getOriginalUrl());
-    System.out.print("   url..");
 
-        if(urlToRet == null)
-        {
+        System.out.print(urlToRet);
+        System.out.print(urlToRet.originalUrl);
+
+        if (urlToRet == null) {
             UrlErrorResponseDto urlErrorResponseDto = new UrlErrorResponseDto();
             urlErrorResponseDto.setError("Url does not exist!");
             urlErrorResponseDto.setStatus("400");
-            return new ResponseEntity<UrlErrorResponseDto>(urlErrorResponseDto,HttpStatus.OK);
+            return new ResponseEntity<UrlErrorResponseDto>(urlErrorResponseDto, HttpStatus.OK);
         }
 
         String urlString = urlToRet.getOriginalUrl();
 
-    if (!urlString.matches("^https://.*") && urlString.startsWith("www.")) {
-    // Add "https://" to the URL
-    urlString = "https://" + urlString;
-    }
+        if (!urlString.matches("^https://.*") && urlString.startsWith("www.")) {
+            // Add "https://" to the URL
+            urlString = "https://" + urlString;
+        }
         response.sendRedirect(urlString);
         return null;
 

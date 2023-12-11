@@ -1,7 +1,6 @@
 package com.springboot.demo.model;
 
-public class UrlResponseDto
-{
+public class UrlResponseDto {
     private String originalUrl;
     private String shortLink;
 
