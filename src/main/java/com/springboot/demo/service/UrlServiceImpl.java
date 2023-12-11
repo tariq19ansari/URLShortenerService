@@ -1,11 +1,16 @@
 package com.springboot.demo.service;
 
+import com.google.common.hash.Hashing;
 import com.springboot.demo.model.Url;
 import com.springboot.demo.model.UrlDto;
 import com.springboot.demo.repository.UrlRepository;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+
 
 @Component
 public class UrlServiceImpl implements UrlService{
@@ -15,7 +20,7 @@ public class UrlServiceImpl implements UrlService{
 
     @Override
     public Url generateShortLink(UrlDto urlDto) {
-        System.out.println("Going in this method" +333333);
+        System.out.println(333333);
         if(StringUtils.isNotEmpty(urlDto.getUrl()))
         {
             String encodedUrl = encodeUrl(urlDto.getUrl());
@@ -34,20 +39,23 @@ public class UrlServiceImpl implements UrlService{
     }
 
     private String encodeUrl(String url) {
-
-        return url;
+        String encodedUrl = "";
+        LocalDateTime time = LocalDateTime.now();
+        encodedUrl = Hashing.murmur3_32()
+                .hashString(url.concat(time.toString()), StandardCharsets.UTF_8)
+                .toString();
+        return  encodedUrl;
     }
-
     @Override
     public Url persistShortLink(Url url) {
         Url urlToRet = urlRepository.save(url);
-        return null;
+        return urlToRet;
     }
 
     @Override
     public Url getEncodedUrl(String url) {
         Url urlToRet = urlRepository.findByShortLink(url);
-        return null;
+        return urlToRet;
     }
 
     @Override
