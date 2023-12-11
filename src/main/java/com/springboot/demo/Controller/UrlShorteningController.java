@@ -70,25 +70,15 @@ public class UrlShorteningController {
             urlErrorResponseDto.setStatus("400");
             return new ResponseEntity<UrlErrorResponseDto>(urlErrorResponseDto,HttpStatus.OK);
         }
-       String urlString = urlToRet.getOriginalUrl();
-//
-//        if (!urlString.matches("https(.*)")){
-//            urlString = "https://" + urlString;
-//        }
-        response.sendRedirect(urlString);
-      //  response.sendRedirect(urlToRet.getOriginalUrl());
-        return null;
 
-//    if (urlToRet != null) {
-//        String urlString = urlToRet.getOriginalUrl();
-//        if (!urlString.startsWith("http")) {
-//            urlString = "https://" + urlString; // Adjust protocol if necessary
-//        }
-//        return "redirect:" + urlString;
-//    } else {
-//        attributes.addFlashAttribute("error", "Url does not exist!");
-//        return "redirect:/"; // Redirect to some other page
-//    }
+        String urlString = urlToRet.getOriginalUrl();
+
+    if (!urlString.matches("^https://.*") && urlString.startsWith("www.")) {
+    // Add "https://" to the URL
+    urlString = "https://" + urlString;
+    }
+        response.sendRedirect(urlString);
+        return null;
 
     }
 }
